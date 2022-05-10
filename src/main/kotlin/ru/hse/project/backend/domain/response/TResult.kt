@@ -1,4 +1,4 @@
-package ru.hse.project.backend.model
+package ru.hse.project.backend.domain.response
 
 class TResult<T>(
         val success: T? = null,

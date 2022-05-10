@@ -1,22 +1,18 @@
 package ru.hse.project.backend.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import ru.hse.project.backend.model.AddNewTrashRequest
-import ru.hse.project.backend.model.TResult
+import ru.hse.project.backend.exception.TrashCanException
 import ru.hse.project.backend.model.TrashCan
-import ru.hse.project.backend.model.UserAndTrashRequest
+import ru.hse.project.backend.repository.TrashRepository
 
 @Service
-interface TrashService {
+class TrashService @Autowired constructor(private val trashRepository: TrashRepository) {
 
-    fun getAllTrashCans(): TResult<List<TrashCan>>
+    fun getTrashCanOrElseThrow(trashCanId: Long): TrashCan =
+        trashRepository.findById(trashCanId).orElseThrow { TrashCanException("There is no trash can with id: $trashCanId") }
 
-    fun getFavoriteTrashCans(userId: String): TResult<List<TrashCan>>
+    fun getAllTrashCans(): List<TrashCan> = trashRepository.findAll()
 
-    fun addFavoriteTrashCan(request: UserAndTrashRequest): TResult<Void>
-
-    fun deleteFavoriteTrashCan(request: UserAndTrashRequest): TResult<Void>
-
-    fun addNewTrash(request: AddNewTrashRequest):TResult<Void>
-
+    fun save(can: TrashCan) = trashRepository.save(can)
 }
