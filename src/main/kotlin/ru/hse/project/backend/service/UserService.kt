@@ -2,14 +2,12 @@ package ru.hse.project.backend.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DuplicateKeyException
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.hse.project.backend.domain.request.GetRatingRequest
 import ru.hse.project.backend.domain.request.SignInUserRequest
 import ru.hse.project.backend.domain.request.UserAndTrashRequest
 import ru.hse.project.backend.domain.response.RatingUsers
-import ru.hse.project.backend.domain.response.TResult
 import ru.hse.project.backend.exception.UserException
 import ru.hse.project.backend.model.*
 import ru.hse.project.backend.repository.UserRepository
@@ -52,7 +50,7 @@ class UserService @Autowired constructor(
     }
 
     fun signInUser(request: SignInUserRequest): User =
-        userRepository.findByPasswordAndEmail(request.password, request.email)
+        userRepository.findByPasswordOwnAndEmail(request.password, request.email)
             .orElseThrow { UserException("There is no user with such credentials") }
 
     fun deleteById(id: Long) = userRepository.deleteById(id)
@@ -72,11 +70,13 @@ class UserService @Autowired constructor(
     @Transactional
     fun getUserScore(id: Long) = getUserOrElseThrow(id).visitedTrashCans.size
 
-    fun increaseScore(request: UserAndTrashRequest) {
-        val can = trashService.getTrashCanOrElseThrow(request.trashCanId)
-        val user = getUserOrElseThrow(request.id)
+    fun increaseScore(userId: Long, trashCanId: Long) {
+        val can = trashService.getTrashCanOrElseThrow(trashCanId)
+        val user = getUserOrElseThrow(userId)
         if (!user.visitedTrashCans.add(can)) {
-            throw UserException("Trash can with id: ${request.trashCanId} was already visited by user with id: ${request.id}")
+            throw UserException("Trash can with id: $trashCanId was already visited by user with id: $userId")
         }
     }
+
+    fun findByGoogleId(id: String) = userRepository.findByGoogleId(id)
 }

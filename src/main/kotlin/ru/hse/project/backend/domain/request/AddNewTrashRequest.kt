@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect
 
 @JsonAutoDetect
 data class AddNewTrashRequest(
-    var idUser: String,
     var latitude:Double,
     var longitude:Double,
     var title: String,
