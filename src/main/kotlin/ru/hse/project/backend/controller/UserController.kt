@@ -35,13 +35,13 @@ class UserController @Autowired constructor(private val userService: UserService
 
     @PatchMapping("/updateEmail")
     fun updateEmail(@RequestParam email: String, @AuthenticationPrincipal user: User) {
-        user.nickName = email
+        user.email = email
         userService.save(user)
     }
 
     @PatchMapping("/updatePassword")
     fun updatePassword(@RequestParam password: String, @AuthenticationPrincipal user: User) {
-        user.nickName = password
+        user.passwordOwn = password
         userService.save(user)
     }
 
